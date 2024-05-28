@@ -1,0 +1,19 @@
+{
+    "name": "Spotify Lyrics",
+    "description": "",
+    "version": "1.0.0",
+    "manifest_version": 3,
+    "content_scripts": [
+        {
+          "matches": ["https://open.spotify.com/*"],
+          "js": ["script.js"]
+        }
+    ],
+    "permissions": [],
+    "icons": {
+        "16": "icons/logo_16x.png",
+        "32": "icons/logo_32x.png",
+        "48": "icons/logo_48x.png",
+        "128": "icons/logo_128x.png"
+    }
+}
