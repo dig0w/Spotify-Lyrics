@@ -1,6 +1,6 @@
 {
     "name": "Spotify Lyrics",
-    "description": "",
+    "description": "This extension for Google Chrome adds back Spotify Lyrics, from Genius API",
     "version": "1.0.0",
     "manifest_version": 3,
     "content_scripts": [
