@@ -44,35 +44,18 @@ async function lyricsLoader() {
 
 	console.log("2/1 loading lyrics");
 
-	const observerUpdate = new MutationObserver((mutationsList, observer) => {
-		for(const mutation of mutationsList) {
-			if (mutation.type === "childList") {
-				if (!update) {
-					update = true;
-					console.log("1/3 url match");
-					lyricsLoader();
-
-					setTimeout(() => { update = false }, 100);
-				};
-			};
-		};
-	});
-	const npSong = document.querySelector("div.deomraqfhIAoSB3SgXpu");
-		if (npSong && !observing) {
-			observing = true;
-			observerUpdate.observe(npSong, { subtree: true, childList: true });
-		};
+	observerNpSong();
 
 	const data = await songInfo();
 	const titleDIV = data[0];
 	const artists = data[1];
 
 	if (song.title !== titleDIV.innerHTML || song.artist !== artists.innerHTML) {
-		return await fetchLyrics(titleDIV, artists);
+		await fetchLyrics(titleDIV, artists);
 	} else {
 		console.log("3 lyrics saved");
 
-		return displayLyrics();
+		displayLyrics();
 	};
 };
 
@@ -87,12 +70,40 @@ function deleteDIVs() {
 	return;
 };
 
+async function observerNpSong() {
+	const observerUpdate = new MutationObserver((mutationsList, observer) => {
+		for(const mutation of mutationsList) {
+			if (mutation.type === "childList") {
+				if (!update) {
+					update = true;
+					console.log("1/3 url match");
+					lyricsLoader();
+
+					setTimeout(() => { update = false }, 100);
+				};
+			};
+		};
+	});
+	let npSong = document.querySelector("div.deomraqfhIAoSB3SgXpu");
+		while (npSong === null) {
+			await delay(100);
+
+			npSong = document.querySelector("div.deomraqfhIAoSB3SgXpu");
+				if (npSong && !observing) {
+					observing = true;
+					observerUpdate.observe(npSong, { subtree: true, childList: true });
+				};
+		};
+	
+	return;
+};
+
 async function songInfo() {
+	console.log("2/2 get data");
+
 	let titleDIV = document.querySelector('a[data-testid="context-item-link"]');
 		while (titleDIV === null) {
 			await delay(100);
-
-			console.log("2/2 get data");
 
 			titleDIV = document.querySelector('a[data-testid="context-item-link"]');
 		};
@@ -100,8 +111,6 @@ async function songInfo() {
 	let artists = document.querySelector('a[data-testid="context-item-info-artist"]');
 		while (artists === null) {
 			await delay(100);
-
-			console.log("2/2 get data");
 
 			artists = document.querySelector('a[data-testid="context-item-info-artist"]');
 		};
@@ -225,10 +234,28 @@ function autoScrollLyrics(divLyrics) {
     const lineIndex = Math.floor(progress * totalLines) - 1;
 
     if (lineIndex >= 0 && lineIndex < totalLines) {
-		divLyrics.children[lineIndex].scrollIntoView({ behavior: "smooth", block: "center" });
+		// divLyrics.children[lineIndex].scrollIntoView({ behavior: "smooth", block: "center" });
+		divLyrics.children[lineIndex].classList.add("sl-autoScrollLyrics");
+			if (divLyrics.children[lineIndex - 1]) {
+				divLyrics.children[lineIndex - 1].classList.remove("sl-autoScrollLyrics");
+			};
+
+		if (isLyricLineVisible(divLyrics)) {
+			divLyrics.children[lineIndex].scrollIntoView({ behavior: "smooth", block: "center" });
+		};
     };
 
 	return scrollTimer = setInterval(() => {
 		autoScrollLyrics(divLyrics)
 	}, 1000);
+};
+
+function isLyricLineVisible(divLyrics) {
+	const currentLyric = divLyrics.querySelector(".sl-autoScrollLyrics");
+		if (currentLyric) {
+			const rect = currentLyric.getBoundingClientRect();
+			return ( rect.top >= 0 && rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) );
+		};
+
+    return false;
 };
