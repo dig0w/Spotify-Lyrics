@@ -4,10 +4,20 @@ function delay(ms) {
 
 // OnLoad
 let oldHref = document.location.href;
-window.onload = () => {
+window.onload = async () => {
 	if (window.location.href == "https://open.spotify.com/lyrics") {
 		console.log("1/1 url match");
 		lyricsLoader();
+	} else {
+		console.log("2/1 loading lyrics");
+	
+		const data = await songInfo();
+		const titleDIV = data[0];
+		const artists = data[1];
+	
+		if (song.title !== titleDIV.innerHTML || song.artist !== artists.innerHTML) {
+			await fetchLyrics(titleDIV, artists);
+		};
 	};
 
     const observerReload = new MutationObserver(mutations => {
@@ -31,7 +41,7 @@ window.onload = () => {
 let observing = false;
 let update = false
 
-let song = {
+var song = {
 	title: undefined,
 	artist: undefined,
 	lyrics: []
@@ -52,6 +62,7 @@ async function lyricsLoader() {
 
 	if (song.title !== titleDIV.innerHTML || song.artist !== artists.innerHTML) {
 		await fetchLyrics(titleDIV, artists);
+		displayLyrics();
 	} else {
 		console.log("3 lyrics saved");
 
@@ -93,6 +104,10 @@ async function observerNpSong() {
 					observing = true;
 					observerUpdate.observe(npSong, { subtree: true, childList: true });
 				};
+		};
+		if (npSong && !observing) {
+			observing = true;
+			observerUpdate.observe(npSong, { subtree: true, childList: true });
 		};
 	
 	return;
@@ -146,7 +161,7 @@ async function fetchLyrics(titleDIV, artists) {
 		lyrics: filteredParagraphs
 	};
 
-	return displayLyrics();
+	return;
 };
 
 function displayLyrics() {
@@ -234,15 +249,15 @@ function autoScrollLyrics(divLyrics) {
     const lineIndex = Math.floor(progress * totalLines) - 1;
 
     if (lineIndex >= 0 && lineIndex < totalLines) {
-		// divLyrics.children[lineIndex].scrollIntoView({ behavior: "smooth", block: "center" });
+		divLyrics.children[lineIndex].scrollIntoView({ behavior: "smooth", block: "center" });
 		divLyrics.children[lineIndex].classList.add("sl-autoScrollLyrics");
 			if (divLyrics.children[lineIndex - 1]) {
 				divLyrics.children[lineIndex - 1].classList.remove("sl-autoScrollLyrics");
 			};
 
-		if (isLyricLineVisible(divLyrics)) {
-			divLyrics.children[lineIndex].scrollIntoView({ behavior: "smooth", block: "center" });
-		};
+		// if (isLyricLineVisible(divLyrics)) {
+		// 	divLyrics.children[lineIndex].scrollIntoView({ behavior: "smooth", block: "center" });
+		// };
     };
 
 	return scrollTimer = setInterval(() => {
