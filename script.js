@@ -25,10 +25,20 @@ window.onload = async () => {
             if (oldHref != document.location.href) {
                 oldHref = document.location.href;
 
-				setTimeout(() => {
+				setTimeout(async () => {
 					if (window.location.href == "https://open.spotify.com/lyrics") {
 						console.log("1/2 url match");
 						lyricsLoader();
+					} else {
+						console.log("2/1 loading lyrics");
+					
+						const data = await songInfo();
+						const titleDIV = data[0];
+						const artists = data[1];
+					
+						if (song.title !== titleDIV.innerHTML || song.artist !== artists.innerHTML) {
+							await fetchLyrics(titleDIV, artists);
+						};
 					};
 				}, 1000);
             };
