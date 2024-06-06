@@ -2,12 +2,28 @@ function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+
+var observing = false;
+var update = false;
+
+var song = {
+	title: undefined,
+	artist: undefined,
+	lyrics: []
+};
+var scrollTimer;
+
 // OnLoad
-let oldHref = document.location.href;
+var oldHref = document.location.href;
 window.onload = async () => {
 	if (window.location.href == "https://open.spotify.com/lyrics") {
-		console.log("1/1 url match");
-		lyricsLoader();
+		if (!update) {
+			console.log("1/1 url match");
+			update = true;
+			lyricsLoader();
+
+			setTimeout(() => { update = false }, 5000);
+		};
 	} else {
 		console.log("2/1 loading lyrics");
 	
@@ -27,11 +43,16 @@ window.onload = async () => {
 
 				setTimeout(async () => {
 					if (window.location.href == "https://open.spotify.com/lyrics") {
-						console.log("1/2 url match");
-						lyricsLoader();
+						if (!update) {
+							console.log("1/2 url match");
+							update = true;
+							lyricsLoader();
+
+							setTimeout(() => { update = false }, 5000);
+						};
 					} else {
 						console.log("2/1 loading lyrics");
-					
+
 						const data = await songInfo();
 						const titleDIV = data[0];
 						const artists = data[1];
@@ -47,16 +68,6 @@ window.onload = async () => {
 
     observerReload.observe(document.body, { subtree: true, childList: true });
 };
-
-let observing = false;
-let update = false
-
-var song = {
-	title: undefined,
-	artist: undefined,
-	lyrics: []
-};
-let scrollTimer;
 
 // Lyrics
 async function lyricsLoader() {
@@ -96,11 +107,11 @@ async function observerNpSong() {
 		for(const mutation of mutationsList) {
 			if (mutation.type === "childList") {
 				if (!update) {
-					update = true;
 					console.log("1/3 url match");
+					update = true;
 					lyricsLoader();
 
-					setTimeout(() => { update = false }, 100);
+					setTimeout(() => { update = false }, 5000);
 				};
 			};
 		};
@@ -144,18 +155,18 @@ async function songInfo() {
 };
 
 async function fetchLyrics(titleDIV, artists) {
-	let title = titleDIV.innerHTML;
+	let title = titleDIV.innerText;
 		if (title.includes("(")) { title = title.split("(")[0] };
 		if (title.includes(")")) { title = title.split(")")[0] };
 		if (title.includes("-")) { title = title.split("-")[0] };
 
-	const searchResponse = await fetch(`http://localhost:2424/lyrics?q=${encodeURIComponent(title + ' ' + artists.innerHTML)}`);
+	const searchResponse = await fetch(`http://localhost:2424/lyrics?q=${encodeURIComponent(title + ' ' + artists.innerText)}`);
 		if (!searchResponse.ok) { return console.error("Search request failed:", await searchResponse.text()); };
 
-	console.log("3 lyrics recived");
+	console.log("3 lyrics recived", title + ' ' + artists.innerText);
 
 	const songData = await searchResponse.json();
-		if (songData.status == 204 || !songData.lyrics) { return console.log("No lyrics found"); };
+		if (songData.status == 204 || !songData.lyrics) { return console.log("No lyrics found", title + ' ' + artists.innerText); };
 	const lyrics = songData.lyrics.split('\n');
 
 	const filteredParagraphs = lyrics.filter(paragraph => { return !/\[.*?\]/.test(paragraph) });
@@ -203,9 +214,9 @@ function displayLyrics() {
 
 		if (divLyrics.children.length > song.lyrics.length) {
 			while (divLyrics.children.length > song.lyrics.length) {
-				divLyrics.children[0].remove();
-
 				console.log("4/3 remove children a more");
+
+				divLyrics.children[divLyrics.children.length - 1].remove();
 			};
 		};
 
@@ -215,10 +226,10 @@ function displayLyrics() {
 		let paragraph = song.lyrics[i];
 			if (paragraph == "") { paragraph = "⠀" };
 
-		if (divLyrics.children.length > i + 1) {
+		if (divLyrics.children.length > i) {
 			divLyrics.children[i].children[0].innerHTML = paragraph;
 
-			console.log("6 edit lyric");
+			console.log("6 edit lyric", song.lyrics.length);
 		} else {
 			const divP = document.createElement("div");
 			divP.setAttribute("dir", "auto");
@@ -232,7 +243,7 @@ function displayLyrics() {
 
 			divLyrics.appendChild(divP);
 
-			console.log("7 create lyric");
+			console.log("7 create lyric", song.lyrics.length);
 		};
 	};
 
