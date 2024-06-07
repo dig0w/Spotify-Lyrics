@@ -163,11 +163,24 @@ async function fetchLyrics(titleDIV, artists) {
 	const searchResponse = await fetch(`http://localhost:2424/lyrics?q=${encodeURIComponent(title + ' ' + artists.innerText)}`);
 		if (!searchResponse.ok) { return console.error("Search request failed:", await searchResponse.text()); };
 
-	console.log("3 lyrics recived", title + ' ' + artists.innerText);
+	console.log("3 lyrics recived", title + " " + artists.innerText);
+
+	let lyrics = [];
 
 	const songData = await searchResponse.json();
-		if (songData.status == 204 || !songData.lyrics) { return console.log("No lyrics found", title + ' ' + artists.innerText); };
-	const lyrics = songData.lyrics.split('\n');
+		if (songData.status == 204 || !songData.lyrics) {
+			const noLyrics = ["You'll have to guess the lyrics for this one.", "Looks like we don't have the lyrics for this song.", "You caught us, we're still working on getting lyrics for this one.", "Hmm. We don't know the lyrics for this one."];
+
+			lyrics.push("");
+			lyrics.push("");
+			lyrics.push("");
+			lyrics.push("");
+			lyrics.push(noLyrics[Math.floor(Math.random() * noLyrics.length)]);
+
+			console.log("No lyrics found", title + " " + artists.innerText);
+		} else {
+			lyrics = songData.lyrics.split("\n");
+		};
 
 	const filteredParagraphs = lyrics.filter(paragraph => { return !/\[.*?\]/.test(paragraph) });
 
