@@ -223,11 +223,11 @@ function displayLyrics() {
 		if (divLyrics.children.length > song.lyrics.length) {
 			for (let i = song.lyrics.length; i < divLyrics.children.length; i++) {
 				console.log("4/3 hiding extra lyric lines");
-				divLyrics.children[i].style.display = 'none';
+				divLyrics.children[i].style.display = "none";
 			};
 		} else {
 			for (let i = 0; i < divLyrics.children.length; i++) {
-				divLyrics.children[i].style.display = '';
+				divLyrics.children[i].style.display = "";
 			};
 		};
 
@@ -276,7 +276,12 @@ function autoScrollLyrics(divLyrics) {
 
 	const currentTime = divDur.getAttribute("data-test-position") / 1000;
 	const duration = Number(divDur.innerHTML.split(":")[0]) * 60 + Number(divDur.innerHTML.split(":")[1]);
-	const totalLines = divLyrics.children.length;
+	let totalLines = 0;
+		for (let i = 0; i < divLyrics.children.length; i++) {
+			if (divLyrics.children[i].style.display != "none") {
+				++totalLines;
+			};
+		};
 	const progress = currentTime / duration;
     const lineIndex = Math.floor(progress * totalLines) - 1;
 
