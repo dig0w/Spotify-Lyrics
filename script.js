@@ -2,7 +2,6 @@ function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-
 var observing = false;
 var update = false;
 
@@ -25,6 +24,8 @@ window.onload = async () => {
 			setTimeout(() => { update = false }, 5000);
 		};
 	} else {
+		loadButton();
+
 		console.log("2/1 loading lyrics");
 	
 		const data = await songInfo();
@@ -35,6 +36,8 @@ window.onload = async () => {
 			await fetchLyrics(titleDIV, artists);
 		};
 	};
+
+	observerNpSong();
 
     const observerReload = new MutationObserver(mutations => {
         mutations.forEach(mutation => {
@@ -69,49 +72,31 @@ window.onload = async () => {
     observerReload.observe(document.body, { subtree: true, childList: true });
 };
 
-// Lyrics
-async function lyricsLoader() {
-	deleteDIVs();
-
-	console.log("2/1 loading lyrics");
-
-	observerNpSong();
-
-	const data = await songInfo();
-	const titleDIV = data[0];
-	const artists = data[1];
-
-	if (song.title !== titleDIV.innerHTML || song.artist !== artists.innerHTML) {
-		await fetchLyrics(titleDIV, artists);
-		displayLyrics();
-	} else {
-		console.log("3 lyrics saved");
-
-		displayLyrics();
-	};
-};
-
-function deleteDIVs() {
-	const div1 = document.querySelector("div.O7ooKKJG0MArEwDgD6IV");
-		if (div1) { div1.style.display = "none" } else { return setTimeout(() => { deleteDIVs() }, 100) };
-	const div2 = document.querySelector("div.hS_lrRHiW4BSWL8WcE8Q");
-		if (div2) { div2.style.display = "none" } else { return setTimeout(() => { deleteDIVs() }, 100) };
-	const div3 = document.querySelector("div._Wna90no0o0dta47Heiw");
-		if (div3) { div3.style.setProperty('--lyrics-color-background', "transparent") } else { return setTimeout(() => { deleteDIVs() }, 100) };
-
-	return;
-};
-
+// Observe Now Playing Song
 async function observerNpSong() {
-	const observerUpdate = new MutationObserver((mutationsList, observer) => {
+	const observerUpdate = new MutationObserver(async (mutationsList, observer) => {
 		for(const mutation of mutationsList) {
 			if (mutation.type === "childList") {
-				if (!update) {
-					console.log("1/3 url match");
-					update = true;
-					lyricsLoader();
-
-					setTimeout(() => { update = false }, 5000);
+				if (window.location.href == "https://open.spotify.com/lyrics") {
+					if (!update) {
+						console.log("1/3 url match");
+						update = true;
+						lyricsLoader();
+			
+						setTimeout(() => { update = false }, 5000);
+					};
+				} else {
+					loadButton();
+			
+					console.log("2/1 loading lyrics");
+				
+					const data = await songInfo();
+					const titleDIV = data[0];
+					const artists = data[1];
+				
+					if (song.title !== titleDIV.innerHTML || song.artist !== artists.innerHTML) {
+						await fetchLyrics(titleDIV, artists);
+					};
 				};
 			};
 		};
@@ -134,6 +119,39 @@ async function observerNpSong() {
 	return;
 };
 
+// Load Lyrics
+async function lyricsLoader() {
+	deleteDIVs();
+
+	console.log("2/1 loading lyrics");
+
+	const data = await songInfo();
+	const titleDIV = data[0];
+	const artists = data[1];
+
+	if (song.title !== titleDIV.innerHTML || song.artist !== artists.innerHTML) {
+		await fetchLyrics(titleDIV, artists);
+		displayLyrics();
+	} else {
+		console.log("3 lyrics saved");
+
+		displayLyrics();
+	};
+};
+
+// Hide divs
+function deleteDIVs() {
+	const div1 = document.querySelector("div.O7ooKKJG0MArEwDgD6IV");
+		if (div1) { div1.style.display = "none" } else { return setTimeout(() => { deleteDIVs() }, 100) };
+	const div2 = document.querySelector("div.hS_lrRHiW4BSWL8WcE8Q");
+		if (div2) { div2.style.display = "none" } else { return setTimeout(() => { deleteDIVs() }, 100) };
+	const div3 = document.querySelector("div._Wna90no0o0dta47Heiw");
+		if (div3) { div3.style.setProperty('--lyrics-color-background', "transparent") } else { return setTimeout(() => { deleteDIVs() }, 100) };
+
+	return;
+};
+
+// Get Song Info
 async function songInfo() {
 	console.log("2/2 get data");
 
@@ -154,6 +172,7 @@ async function songInfo() {
 	return [titleDIV, artists];
 };
 
+// Get Lyrics
 async function fetchLyrics(titleDIV, artists) {
 	let title = titleDIV.innerText;
 		if (title.includes("(")) { title = title.split("(")[0] };
@@ -198,6 +217,7 @@ async function fetchLyrics(titleDIV, artists) {
 	return;
 };
 
+// Show the Lyrics
 function displayLyrics() {
 	console.log("4 test 1");
 
@@ -224,14 +244,6 @@ function displayLyrics() {
 
 			console.log("4/2 create lyrics div");
 		};
-
-		// if (divLyrics.children.length > song.lyrics.length) {
-		// 	while (divLyrics.children.length > song.lyrics.length) {
-		// 		console.log("4/3 remove children a more");
-
-		// 		divLyrics.children[divLyrics.children.length - 1].remove();
-		// 	};
-		// };
 
 		if (divLyrics.children.length > song.lyrics.length) {
 			for (let i = song.lyrics.length; i < divLyrics.children.length; i++) {
@@ -281,6 +293,7 @@ function displayLyrics() {
 	return;
 };
 
+// Auto Scroll the Lyrics
 function autoScrollLyrics(divLyrics) {
 	clearInterval(scrollTimer);
 
@@ -315,6 +328,7 @@ function autoScrollLyrics(divLyrics) {
 	}, 1000);
 };
 
+// Check if current Lyric is Visible
 function isLyricLineVisible(divLyrics) {
 	const currentLyric = divLyrics.querySelector(".sl-autoScrollLyrics");
 		if (currentLyric) {
@@ -323,4 +337,51 @@ function isLyricLineVisible(divLyrics) {
 		};
 
     return false;
+};
+
+// Load Lyrics Button
+function loadButton() {
+	setTimeout(() => {
+		console.log("load btn");
+
+		const btnParent = document.querySelector("div.mwpJrmCgLlVkJVtWjlI1");
+		const lbtn = document.querySelector("button.Button-sc-1dqy6lx-0.fLalFV.KAZD28usA1vPz5GVpm63.Xmv2oAnTB85QE4sqbK00");
+		const labtn = document.querySelector("a.Button-sc-1dqy6lx-0.fLalFV.KAZD28usA1vPz5GVpm63.Xmv2oAnTB85QE4sqbK00");
+	
+		if (btnParent && btnParent.children.length < 7 && !lbtn) {
+			const button = document.createElement("a");
+				button.setAttribute("class", "Button-sc-1dqy6lx-0 fLalFV KAZD28usA1vPz5GVpm63 Xmv2oAnTB85QE4sqbK00");
+				button.setAttribute("data-testid", "lyrics-button");
+				button.setAttribute("data-active", "false");
+				button.setAttribute("aria-pressed", "false");
+				button.setAttribute("aria-label", "Lyrics");
+				button.setAttribute("data-encore-id", "buttonTertiary");
+				button.setAttribute("href", "https://open.spotify.com/lyrics");
+	
+			const span = document.createElement("span");
+				span.setAttribute("aria-hidden", "true");
+				span.setAttribute("class", "IconWrapper__Wrapper-sc-16usrgb-0 hYdsxw");
+
+			const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+				svg.setAttribute("data-encore-id", "icon");
+				svg.setAttribute("role", "img");
+				svg.setAttribute("aria-hidden", "true");
+				svg.setAttribute("viewBox", "0 0 16 16");
+				svg.setAttribute("class", "Svg-sc-ytk21e-0 dYnaPI");
+
+			const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+				path.setAttribute("d", "M13.426 2.574a2.831 2.831 0 0 0-4.797 1.55l3.247 3.247a2.831 2.831 0 0 0 1.55-4.797zM10.5 8.118l-2.619-2.62A63303.13 63303.13 0 0 0 4.74 9.075L2.065 12.12a1.287 1.287 0 0 0 1.816 1.816l3.06-2.688 3.56-3.129zM7.12 4.094a4.331 4.331 0 1 1 4.786 4.786l-3.974 3.493-3.06 2.689a2.787 2.787 0 0 1-3.933-3.933l2.676-3.045 3.505-3.99z");
+
+			svg.appendChild(path);
+			span.appendChild(svg);
+			button.appendChild(span);
+			btnParent.appendChild(button);
+
+			btnParent.insertBefore(button, btnParent.children[1]);
+		} else if (lbtn && labtn) {
+			labtn.remove();
+		};
+	
+		return;
+	}, 1000);
 };
