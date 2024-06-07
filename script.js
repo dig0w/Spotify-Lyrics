@@ -212,11 +212,22 @@ function displayLyrics() {
 			console.log("4/2 create lyrics div");
 		};
 
-		if (divLyrics.children.length > song.lyrics.length) {
-			while (divLyrics.children.length > song.lyrics.length) {
-				console.log("4/3 remove children a more");
+		// if (divLyrics.children.length > song.lyrics.length) {
+		// 	while (divLyrics.children.length > song.lyrics.length) {
+		// 		console.log("4/3 remove children a more");
 
-				divLyrics.children[divLyrics.children.length - 1].remove();
+		// 		divLyrics.children[divLyrics.children.length - 1].remove();
+		// 	};
+		// };
+
+		if (divLyrics.children.length > song.lyrics.length) {
+			for (let i = song.lyrics.length; i < divLyrics.children.length; i++) {
+				console.log("4/3 hiding extra lyric lines");
+				divLyrics.children[i].style.display = 'none';
+			};
+		} else {
+			for (let i = 0; i < divLyrics.children.length; i++) {
+				divLyrics.children[i].style.display = '';
 			};
 		};
 
