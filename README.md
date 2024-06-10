@@ -41,6 +41,8 @@
 
 4. Enable the extension
 
+5. Run the server with `npm run`
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
