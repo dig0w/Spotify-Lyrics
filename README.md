@@ -41,9 +41,11 @@
 
 4. Enable the extension
 
-5. Install server dependices `npm i`
+5. Create `.env` file in server folder with your Genius API, like this `GENIUS_API_TOKEN = xxx`
 
-6. Run the server with `npm run`
+6. Install server dependices `npm i`
+
+7. Run the server with `npm run`
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
