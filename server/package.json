@@ -5,7 +5,7 @@
   "main": "index.js",
   "author": "dig0w",
   "scripts": {
-    "start": "node ."
+    "run": "node ."
   },
   "dependencies": {
     "dotenv": "^16.4.5",
