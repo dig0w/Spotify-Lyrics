@@ -179,7 +179,7 @@ async function fetchLyrics(titleDIV, artists) {
 		if (title.includes(")")) { title = title.split(")")[0] };
 		if (title.includes("-")) { title = title.split("-")[0] };
 
-	const searchResponse = await fetch(`http://localhost:2424/lyrics?q=${encodeURIComponent(title + ' ' + artists.innerText)}`);
+	const searchResponse = await fetch(`http://localhost:2024/lyrics?q=${encodeURIComponent(title + ' ' + artists.innerText)}`);
 		if (!searchResponse.ok) { return console.error("Search request failed:", await searchResponse.text()); };
 
 	console.log("3 lyrics recived", title + " " + artists.innerText);
