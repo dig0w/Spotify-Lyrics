@@ -41,7 +41,7 @@
 
 4. Enable the extension
 
-5. Create `.env` file in server folder with your Genius API, like this `GENIUS_API_TOKEN = xxx`
+5. Create `.env` file in server folder with your [Genius API](https://genius.com/api-clients), like this `GENIUS_API_TOKEN = xxx`
 
 6. Install server dependices `npm i`
 
