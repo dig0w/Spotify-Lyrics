@@ -235,58 +235,59 @@ function displayLyrics() {
 				if (!parentP) { return };
 				parentP.appendChild(parent);
 
-			let noLyricDiv = document.querySelector("div.e7eFLioNSG5PAi1qVFT4");
-				if (noLyricDiv) { noLyricDiv.style.display = "none" };
-
 			console.log("4/2 create lyrics div");
 		};
 
-		if (divLyrics.children.length > song.lyrics.length) {
-			for (let i = song.lyrics.length; i < divLyrics.children.length; i++) {
-				console.log("4/3 hiding extra lyric lines");
-				divLyrics.children[i].style.display = "none";
+		const noLyricDiv = document.querySelector("div.e7eFLioNSG5PAi1qVFT4");
+		if (noLyricDiv) {
+			noLyricDiv.style.display = "none";
+
+			if (divLyrics.children.length > song.lyrics.length) {
+				for (let i = song.lyrics.length; i < divLyrics.children.length; i++) {
+					console.log("4/3 hiding extra lyric lines");
+					divLyrics.children[i].style.display = "none";
+				};
+			} else {
+				for (let i = 0; i < divLyrics.children.length; i++) {
+					divLyrics.children[i].style.display = "";
+				};
 			};
-		} else {
-			for (let i = 0; i < divLyrics.children.length; i++) {
-				divLyrics.children[i].style.display = "";
+
+			console.log("5 test 2");
+
+			for (let i = 0; i < song.lyrics.length; i++) {
+				let paragraph = song.lyrics[i];
+					if (paragraph == "") { paragraph = "⠀" };
+
+				if (divLyrics.children.length > i) {
+					divLyrics.children[i].children[0].innerHTML = paragraph;
+
+					console.log("6 edit lyric", song.lyrics.length);
+				} else {
+					const divP = document.createElement("div");
+					divP.setAttribute("dir", "auto");
+					divP.setAttribute("class", "nw6rbs8R08fpPn7RWW2w SruqsAzX8rUtY2isUZDF");
+					divP.setAttribute("data-testid", "fullscreen-lyric");
+					const divPC = document.createElement("div");
+					divPC.setAttribute("class", "BXlQFspJp_jq9SKhUSP3");
+					divPC.innerHTML = paragraph;
+
+						divP.appendChild(divPC);
+
+					divLyrics.appendChild(divP);
+
+					console.log("7 create lyric", song.lyrics.length);
+				};
 			};
-		};
 
-	console.log("5 test 2");
+			divLyrics.children[0].scrollIntoView({ behavior: "smooth", block: "center" });
 
-	for (let i = 0; i < song.lyrics.length; i++) {
-		let paragraph = song.lyrics[i];
-			if (paragraph == "") { paragraph = "⠀" };
+			autoScrollLyrics(divLyrics);
 
-		if (divLyrics.children.length > i) {
-			divLyrics.children[i].children[0].innerHTML = paragraph;
-
-			console.log("6 edit lyric", song.lyrics.length);
+			return;
 		} else {
-			const divP = document.createElement("div");
-			divP.setAttribute("dir", "auto");
-			divP.setAttribute("class", "nw6rbs8R08fpPn7RWW2w SruqsAzX8rUtY2isUZDF");
-			divP.setAttribute("data-testid", "fullscreen-lyric");
-			const divPC = document.createElement("div");
-			divPC.setAttribute("class", "BXlQFspJp_jq9SKhUSP3");
-			divPC.innerHTML = paragraph;
-
-				divP.appendChild(divPC);
-
-			divLyrics.appendChild(divP);
-
-			console.log("7 create lyric", song.lyrics.length);
+			return console.log("7 Has Lyrics");
 		};
-	};
-
-	divLyrics.children[0].scrollIntoView({ behavior: "smooth", block: "center" });
-
-	let noLyricDiv = document.querySelector("div.e7eFLioNSG5PAi1qVFT4");
-		if (noLyricDiv) { noLyricDiv.style.display = "none" };
-
-	autoScrollLyrics(divLyrics);
-
-	return;
 };
 
 // Auto Scroll the Lyrics
