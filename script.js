@@ -24,6 +24,8 @@ window.onload = async () => {
 			setTimeout(() => { update = false }, 5000);
 		};
 	} else {
+		loadButton();
+
 		console.log("2/1 loading lyrics");
 	
 		const data = await songInfo();
@@ -84,6 +86,8 @@ async function observerNpSong() {
 						setTimeout(() => { update = false }, 5000);
 					};
 				} else {
+					loadButton();
+
 					console.log("2/1 loading lyrics");
 
 					const data = await songInfo();
@@ -201,8 +205,6 @@ async function fetchLyrics(titleDIV, artists) {
 
 	filteredParagraphs.push("");
 	filteredParagraphs.push("");
-	filteredParagraphs.push("");
-	filteredParagraphs.push("");
 
 	song = {
 		title: titleDIV.innerHTML,
@@ -280,6 +282,17 @@ function displayLyrics() {
 				};
 			};
 
+			const divProvider = document.createElement("div");
+				divProvider.setAttribute("class", "LomBcMvfM8AEmZGquAdj");
+			const pProvider = document.createElement("p");
+				pProvider.setAttribute("class", "encore-text encore-text-body-small");
+				pProvider.setAttribute("data-encore-id", "text");
+				pProvider.setAttribute("dir", "auto");
+				pProvider.innerHTML = "Lyrics provided by Genius"
+
+				divProvider.appendChild(pProvider);
+			divLyrics.appendChild(divProvider);
+
 			divLyrics.children[0].scrollIntoView({ behavior: "smooth", block: "center" });
 
 			autoScrollLyrics(divLyrics);
@@ -334,4 +347,29 @@ function isLyricLineVisible(divLyrics) {
 		};
 
     return false;
+};
+
+// Load Lyrics Button
+function loadButton() {
+	setTimeout(() => {
+		console.log("load button");
+
+		const lyricsbtn = document.querySelector("button.Button-sc-1dqy6lx-0.SriuV.KAZD28usA1vPz5GVpm63.Xmv2oAnTB85QE4sqbK00");
+
+		if (lyricsbtn && lyricsbtn.disabled) {
+			lyricsbtn.disabled = false;
+			lyricsbtn.setAttribute("aria-label", "Lyrics");
+
+			lyricsbtn.addEventListener("click", () => {
+				return window.location.href = "/lyrics";
+			});
+
+			console.log("enabled button");
+		} else if (!lyricsbtn) {
+			console.log("no lyrics button")
+			loadButton()
+		};
+
+		return;
+	}, 1000);
 };
