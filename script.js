@@ -216,91 +216,104 @@ async function fetchLyrics(titleDIV, artists) {
 };
 
 // Show the Lyrics
-function displayLyrics() {
+async function displayLyrics() {
 	console.log("4 test 1");
 
 	let divLyrics = document.querySelector("div._Wna90no0o0dta47Heiw");
-		if (document.querySelectorAll("div._Wna90no0o0dta47Heiw").length > 1) {
-			console.log("4/1 remove 2 lyrics div");
 
-			document.querySelectorAll("div._Wna90no0o0dta47Heiw")[1].parentElement.remove();
-		};
-		if (!divLyrics) {
-			divLyrics = document.createElement("div");
-			divLyrics.setAttribute("class", "_Wna90no0o0dta47Heiw");
+	await delay(100);
 
-			const parent = document.createElement("div");
-			parent.setAttribute("class", "gqaWFmQeKNYnYD5gRv3x");
-			parent.appendChild(divLyrics);
+	if (document.querySelectorAll("div._Wna90no0o0dta47Heiw").length > 1) {
+		console.log("4/1 remove 2 lyrics div");
 
-			const parentP = document.querySelector("div.FUYNhisXTCmbzt9IDxnT");
-				if (!parentP) { return };
-				parentP.appendChild(parent);
+		document.querySelectorAll("div._Wna90no0o0dta47Heiw")[1].parentElement.remove();
+	};
+	if (!divLyrics) {
+		divLyrics = document.createElement("div");
+		divLyrics.setAttribute("class", "_Wna90no0o0dta47Heiw");
 
-			console.log("4/2 create lyrics div");
-		};
+		const parent = document.createElement("div");
+		parent.setAttribute("class", "gqaWFmQeKNYnYD5gRv3x");
+		parent.appendChild(divLyrics);
 
-		const noLyricDiv = document.querySelector("div.e7eFLioNSG5PAi1qVFT4");
-		if (noLyricDiv) {
-			noLyricDiv.style.display = "none";
+		const parentP = document.querySelector("div.FUYNhisXTCmbzt9IDxnT");
+			if (!parentP) { return };
+			parentP.appendChild(parent);
 
-			if (divLyrics.children.length > song.lyrics.length) {
-				for (let i = song.lyrics.length; i < divLyrics.children.length; i++) {
-					console.log("4/3 hiding extra lyric lines");
-					divLyrics.children[i].style.display = "none";
-				};
-			} else {
-				for (let i = 0; i < divLyrics.children.length; i++) {
-					divLyrics.children[i].style.display = "";
-				};
+		console.log("4/2 create lyrics div");
+	};
+
+	const noLyricDiv = document.querySelector("div.e7eFLioNSG5PAi1qVFT4");
+	if (noLyricDiv) {
+		noLyricDiv.style.display = "none";
+
+		if (divLyrics.children.length > song.lyrics.length) {
+			for (let i = song.lyrics.length; i < divLyrics.children.length; i++) {
+				console.log("4/3 hiding extra lyric lines");
+				divLyrics.children[i].style.display = "none";
 			};
-
-			console.log("5 test 2");
-
-			for (let i = 0; i < song.lyrics.length; i++) {
-				let paragraph = song.lyrics[i];
-					if (paragraph == "") { paragraph = "⠀" };
-
-				if (divLyrics.children.length > i) {
-					divLyrics.children[i].children[0].innerHTML = paragraph;
-
-					console.log("6 edit lyric", song.lyrics.length);
-				} else {
-					const divP = document.createElement("div");
-					divP.setAttribute("dir", "auto");
-					divP.setAttribute("class", "nw6rbs8R08fpPn7RWW2w SruqsAzX8rUtY2isUZDF");
-					divP.setAttribute("data-testid", "fullscreen-lyric");
-					const divPC = document.createElement("div");
-					divPC.setAttribute("class", "BXlQFspJp_jq9SKhUSP3");
-					divPC.innerHTML = paragraph;
-
-						divP.appendChild(divPC);
-
-					divLyrics.appendChild(divP);
-
-					console.log("7 create lyric", song.lyrics.length);
-				};
-			};
-
-			const divProvider = document.createElement("div");
-				divProvider.setAttribute("class", "LomBcMvfM8AEmZGquAdj");
-			const pProvider = document.createElement("p");
-				pProvider.setAttribute("class", "encore-text encore-text-body-small");
-				pProvider.setAttribute("data-encore-id", "text");
-				pProvider.setAttribute("dir", "auto");
-				pProvider.innerHTML = "Lyrics provided by Genius"
-
-				divProvider.appendChild(pProvider);
-			divLyrics.appendChild(divProvider);
-
-			divLyrics.children[0].scrollIntoView({ behavior: "smooth", block: "center" });
-
-			autoScrollLyrics(divLyrics);
-
-			return;
 		} else {
-			return console.log("7 Has Lyrics");
+			for (let i = 0; i < divLyrics.children.length; i++) {
+				divLyrics.children[i].style.display = "";
+			};
 		};
+
+		console.log("5 test 2");
+
+		for (let i = 0; i < song.lyrics.length; i++) {
+			let paragraph = song.lyrics[i];
+				if (paragraph == "") { paragraph = "⠀" };
+
+			if (divLyrics.children.length > i) {
+				const divPC = document.createElement("div");
+				divPC.setAttribute("class", "BXlQFspJp_jq9SKhUSP3");
+				divPC.innerHTML = paragraph;
+
+				divLyrics.children[i].replaceChild(divPC, divLyrics.children[i].children[0]);
+
+				divLyrics.children[i].removeAttribute("class");
+
+				divLyrics.children[i].setAttribute("dir", "auto");
+				divLyrics.children[i].setAttribute("class", "nw6rbs8R08fpPn7RWW2w SruqsAzX8rUtY2isUZDF");
+				divLyrics.children[i].setAttribute("data-testid", "fullscreen-lyric");
+
+				console.log("6 edit lyric", song.lyrics.length);
+			} else {
+				const divP = document.createElement("div");
+				divP.setAttribute("dir", "auto");
+				divP.setAttribute("class", "nw6rbs8R08fpPn7RWW2w SruqsAzX8rUtY2isUZDF");
+				divP.setAttribute("data-testid", "fullscreen-lyric");
+				const divPC = document.createElement("div");
+				divPC.setAttribute("class", "BXlQFspJp_jq9SKhUSP3");
+				divPC.innerHTML = paragraph;
+
+					divP.appendChild(divPC);
+
+				divLyrics.appendChild(divP);
+
+				console.log("7 create lyric", song.lyrics.length);
+			};
+		};
+
+		const divProvider = document.createElement("div");
+			divProvider.setAttribute("class", "LomBcMvfM8AEmZGquAdj");
+		const pProvider = document.createElement("p");
+			pProvider.setAttribute("class", "encore-text encore-text-body-small");
+			pProvider.setAttribute("data-encore-id", "text");
+			pProvider.setAttribute("dir", "auto");
+			pProvider.innerHTML = "Lyrics provided by Genius";
+
+			divProvider.appendChild(pProvider);
+		divLyrics.appendChild(divProvider);
+
+		divLyrics.children[0].scrollIntoView({ behavior: "smooth", block: "center" });
+
+		autoScrollLyrics(divLyrics);
+
+		return;
+	} else {
+		return console.log("7 Has Lyrics");
+	};
 };
 
 // Auto Scroll the Lyrics
