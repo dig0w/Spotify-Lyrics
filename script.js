@@ -2,8 +2,17 @@ function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-var observing = false;
-var update = false;
+const mainUrl = 'https://open.spotify.com/lyrics';
+const fetchUrl = 'http://localhost:2024/lyrics?q=';
+
+const nowPlayingWidget = '[data-testid="now-playing-widget"]';
+const npTitle = '[data-testid="context-item-link"]';
+const npArtist = '[data-testid="context-item-info-artist"]';
+const lyricsContainer = 'div._Wna90no0o0dta47Heiw';
+const lcParent = 'div.FUYNhisXTCmbzt9IDxnT';
+const noLyricsContainer = 'div.e7eFLioNSG5PAi1qVFT4';
+const durationContainer = '[data-testid="playback-duration"]';
+const lyricsButton = '[data-testid="lyrics-button"]';
 
 var song = {
 	title: undefined,
@@ -11,11 +20,15 @@ var song = {
 	lyrics: []
 };
 var scrollTimer;
+var index = 0;
+
+var observing = false;
+var update = false;
 
 // OnLoad
-var oldHref = document.location.href;
+var oldUrl = document.location.href;
 window.onload = async () => {
-	if (window.location.href == "https://open.spotify.com/lyrics") {
+	if (window.location.href == mainUrl) {
 		if (!update) {
 			console.log("1/1 url match");
 			update = true;
@@ -29,11 +42,11 @@ window.onload = async () => {
 		console.log("2/1 loading lyrics");
 	
 		const data = await songInfo();
-		const titleDIV = data[0];
-		const artists = data[1];
+		const titleContainer = data[0];
+		const artistsContainer = data[1];
 	
-		if (song.title !== titleDIV.innerHTML || song.artist !== artists.innerHTML) {
-			await fetchLyrics(titleDIV, artists);
+		if (song.title !== titleContainer.innerHTML || song.artist !== artistsContainer.innerHTML) {
+			await fetchLyrics(titleContainer, artistsContainer);
 		};
 	};
 
@@ -41,11 +54,11 @@ window.onload = async () => {
 
     const observerReload = new MutationObserver(mutations => {
         mutations.forEach(mutation => {
-            if (oldHref != document.location.href) {
-                oldHref = document.location.href;
+            if (oldUrl != document.location.href) {
+                oldUrl = document.location.href;
 
 				setTimeout(async () => {
-					if (window.location.href == "https://open.spotify.com/lyrics") {
+					if (window.location.href == mainUrl) {
 						if (!update) {
 							console.log("1/2 url match");
 							update = true;
@@ -57,11 +70,11 @@ window.onload = async () => {
 						console.log("2/1 loading lyrics");
 
 						const data = await songInfo();
-						const titleDIV = data[0];
-						const artists = data[1];
+						const titleContainer = data[0];
+						const artistsContainer = data[1];
 
-						if (song.title !== titleDIV.innerHTML || song.artist !== artists.innerHTML) {
-							await fetchLyrics(titleDIV, artists);
+						if (song.title !== titleContainer.innerHTML || song.artist !== artistsContainer.innerHTML) {
+							await fetchLyrics(titleContainer, artistsContainer);
 						};
 					};
 				}, 1000);
@@ -77,7 +90,7 @@ async function observerNpSong() {
 	const observerUpdate = new MutationObserver(async (mutationsList, observer) => {
 		for(const mutation of mutationsList) {
 			if (mutation.type === "childList") {
-				if (window.location.href == "https://open.spotify.com/lyrics") {
+				if (window.location.href == mainUrl) {
 					if (!update) {
 						console.log("1/3 url match");
 						update = true;
@@ -91,21 +104,21 @@ async function observerNpSong() {
 					console.log("2/1 loading lyrics");
 
 					const data = await songInfo();
-					const titleDIV = data[0];
-					const artists = data[1];
+					const titleContainer = data[0];
+					const artistsContainer = data[1];
 
-					if (song.title !== titleDIV.innerHTML || song.artist !== artists.innerHTML) {
-						await fetchLyrics(titleDIV, artists);
+					if (song.title !== titleContainer.innerHTML || song.artist !== artistsContainer.innerHTML) {
+						await fetchLyrics(titleContainer, artistsContainer);
 					};
 				};
 			};
 		};
 	});
-	let npSong = document.querySelector("div.deomraqfhIAoSB3SgXpu");
+	let npSong = document.querySelector(nowPlayingWidget);
 		while (npSong === null) {
 			await delay(100);
 
-			npSong = document.querySelector("div.deomraqfhIAoSB3SgXpu");
+			npSong = document.querySelector(nowPlayingWidget);
 				if (npSong && !observing) {
 					observing = true;
 					observerUpdate.observe(npSong, { subtree: true, childList: true });
@@ -121,16 +134,14 @@ async function observerNpSong() {
 
 // Load Lyrics
 async function lyricsLoader() {
-	deleteDIVs();
-
 	console.log("2/1 loading lyrics");
 
 	const data = await songInfo();
-	const titleDIV = data[0];
-	const artists = data[1];
+	const titleContainer = data[0];
+	const artistsContainer = data[1];
 
-	if (song.title !== titleDIV.innerHTML || song.artist !== artists.innerHTML) {
-		await fetchLyrics(titleDIV, artists);
+	if (song.title !== titleContainer.innerHTML || song.artist !== artistsContainer.innerHTML) {
+		await fetchLyrics(titleContainer, artistsContainer);
 		displayLyrics();
 	} else {
 		console.log("3 lyrics saved");
@@ -139,50 +150,38 @@ async function lyricsLoader() {
 	};
 };
 
-// Hide divs
-function deleteDIVs() {
-	const div1 = document.querySelector("div.O7ooKKJG0MArEwDgD6IV");
-		if (div1) { div1.style.display = "none" } else { return setTimeout(() => { deleteDIVs() }, 100) };
-	const div2 = document.querySelector("div.hS_lrRHiW4BSWL8WcE8Q");
-		if (div2) { div2.style.display = "none" } else { return setTimeout(() => { deleteDIVs() }, 100) };
-	const div3 = document.querySelector("div._Wna90no0o0dta47Heiw");
-		if (div3) { div3.style.setProperty('--lyrics-color-background', "transparent") } else { return setTimeout(() => { deleteDIVs() }, 100) };
-
-	return;
-};
-
 // Get Song Info
 async function songInfo() {
 	console.log("2/2 get data");
 
-	let titleDIV = document.querySelector('a[data-testid="context-item-link"]');
-		while (titleDIV === null) {
+	let titleContainer = document.querySelector(npTitle);
+		while (titleContainer === null) {
 			await delay(100);
 
-			titleDIV = document.querySelector('a[data-testid="context-item-link"]');
+			titleContainer = document.querySelector(npTitle);
 		};
 
-	let artists = document.querySelector('a[data-testid="context-item-info-artist"]');
-		while (artists === null) {
+	let artistsContainer = document.querySelector(npArtist);
+		while (artistsContainer === null) {
 			await delay(100);
 
-			artists = document.querySelector('a[data-testid="context-item-info-artist"]');
+			artistsContainer = document.querySelector(npArtist);
 		};
 	
-	return [titleDIV, artists];
+	return [titleContainer, artistsContainer];
 };
 
 // Get Lyrics
-async function fetchLyrics(titleDIV, artists) {
-	let title = titleDIV.innerText;
+async function fetchLyrics(titleContainer, artistsContainer) {
+	let title = titleContainer.innerText;
 		if (title.includes("(")) { title = title.split("(")[0] };
 		if (title.includes(")")) { title = title.split(")")[0] };
 		if (title.includes("-")) { title = title.split("-")[0] };
 
-	const searchResponse = await fetch(`http://localhost:2024/lyrics?q=${encodeURIComponent(title + ' ' + artists.innerText)}`);
+	const searchResponse = await fetch(`${fetchUrl}${encodeURIComponent(title + ' ' + artistsContainer.innerText)}`);
 		if (!searchResponse.ok) { return console.error("Search request failed:", await searchResponse.text()); };
 
-	console.log("3 lyrics recived", title + " " + artists.innerText);
+	console.log("3 lyrics recived", title + " " + artistsContainer.innerText);
 
 	let lyrics = [];
 
@@ -196,7 +195,7 @@ async function fetchLyrics(titleDIV, artists) {
 			lyrics.push("");
 			lyrics.push(noLyrics[Math.floor(Math.random() * noLyrics.length)]);
 
-			console.log("No lyrics found", title + " " + artists.innerText);
+			console.log("No lyrics found", title + " " + artistsContainer.innerText);
 		} else {
 			lyrics = songData.lyrics.split("\n");
 		};
@@ -207,8 +206,8 @@ async function fetchLyrics(titleDIV, artists) {
 	filteredParagraphs.push("");
 
 	song = {
-		title: titleDIV.innerHTML,
-		artist: artists.innerHTML,
+		title: titleContainer.innerHTML,
+		artist: artistsContainer.innerHTML,
 		lyrics: filteredParagraphs
 	};
 
@@ -219,14 +218,14 @@ async function fetchLyrics(titleDIV, artists) {
 async function displayLyrics() {
 	console.log("4 test 1");
 
-	let divLyrics = document.querySelector("div._Wna90no0o0dta47Heiw");
+	let divLyrics = document.querySelector(lyricsContainer);
 
 	await delay(100);
 
-	if (document.querySelectorAll("div._Wna90no0o0dta47Heiw").length > 1) {
+	if (document.querySelectorAll(lyricsContainer).length > 1) {
 		console.log("4/1 remove 2 lyrics div");
 
-		document.querySelectorAll("div._Wna90no0o0dta47Heiw")[1].parentElement.remove();
+		document.querySelectorAll(lyricsContainer)[1].parentElement.remove();
 	};
 	if (!divLyrics) {
 		divLyrics = document.createElement("div");
@@ -236,14 +235,14 @@ async function displayLyrics() {
 		parent.setAttribute("class", "gqaWFmQeKNYnYD5gRv3x");
 		parent.appendChild(divLyrics);
 
-		const parentP = document.querySelector("div.FUYNhisXTCmbzt9IDxnT");
+		const parentP = document.querySelector(lcParent);
 			if (!parentP) { return };
 			parentP.appendChild(parent);
 
 		console.log("4/2 create lyrics div");
 	};
 
-	const noLyricDiv = document.querySelector("div.e7eFLioNSG5PAi1qVFT4");
+	const noLyricDiv = document.querySelector(noLyricsContainer);
 	if (noLyricDiv) {
 		noLyricDiv.style.display = "none";
 
@@ -260,6 +259,8 @@ async function displayLyrics() {
 
 		console.log("5 test 2");
 
+		index = 0;
+
 		for (let i = 0; i < song.lyrics.length; i++) {
 			let paragraph = song.lyrics[i];
 				if (paragraph == "") { paragraph = "⠀" };
@@ -274,14 +275,16 @@ async function displayLyrics() {
 				divLyrics.children[i].removeAttribute("class");
 
 				divLyrics.children[i].setAttribute("dir", "auto");
-				divLyrics.children[i].setAttribute("class", "nw6rbs8R08fpPn7RWW2w SruqsAzX8rUtY2isUZDF");
+				// divLyrics.children[i].setAttribute("class", "nw6rbs8R08fpPn7RWW2w SruqsAzX8rUtY2isUZDF");
+				divLyrics.children[i].setAttribute("class", "nw6rbs8R08fpPn7RWW2w vapgYYF2HMEeLJuOWGq5");
 				divLyrics.children[i].setAttribute("data-testid", "fullscreen-lyric");
 
 				console.log("6 edit lyric", song.lyrics.length);
 			} else {
 				const divP = document.createElement("div");
 				divP.setAttribute("dir", "auto");
-				divP.setAttribute("class", "nw6rbs8R08fpPn7RWW2w SruqsAzX8rUtY2isUZDF");
+				// divP.setAttribute("class", "nw6rbs8R08fpPn7RWW2w SruqsAzX8rUtY2isUZDF");
+				divP.setAttribute("class", "nw6rbs8R08fpPn7RWW2w vapgYYF2HMEeLJuOWGq5");
 				divP.setAttribute("data-testid", "fullscreen-lyric");
 				const divPC = document.createElement("div");
 				divPC.setAttribute("class", "BXlQFspJp_jq9SKhUSP3");
@@ -320,7 +323,7 @@ async function displayLyrics() {
 function autoScrollLyrics(divLyrics) {
 	clearInterval(scrollTimer);
 
-	const divDur = document.querySelector("div.encore-text.encore-text-marginal.encore-internal-color-text-subdued.kQqIrFPM5PjMWb5qUS56");
+	const divDur = document.querySelector(durationContainer);
 		if (!divDur) { return };
 
 	const currentTime = divDur.getAttribute("data-test-position") / 1000;
@@ -335,16 +338,23 @@ function autoScrollLyrics(divLyrics) {
     const lineIndex = Math.floor(progress * totalLines) - 1;
 
     if (lineIndex >= 0 && lineIndex < totalLines) {
-		divLyrics.children[lineIndex].scrollIntoView({ behavior: "smooth", block: "center" });
+		// divLyrics.children[lineIndex].scrollIntoView({ behavior: "smooth", block: "center" });
 		divLyrics.children[lineIndex].classList.add("sl-autoScrollLyrics");
+		divLyrics.children[lineIndex].classList.add("EhKgYshvOwpSrTv399Mw");
 			if (divLyrics.children[lineIndex - 1]) {
 				divLyrics.children[lineIndex - 1].classList.remove("sl-autoScrollLyrics");
 			};
 
-		// if (isLyricLineVisible(divLyrics)) {
-		// 	divLyrics.children[lineIndex].scrollIntoView({ behavior: "smooth", block: "center" });
-		// };
+		if (isLyricLineVisible(divLyrics) || index == 0) {
+			divLyrics.children[lineIndex].scrollIntoView({ behavior: "smooth", block: "center" });
+		};
+
+		index++;
     };
+
+
+	// <div dir="auto" class="nw6rbs8R08fpPn7RWW2w vapgYYF2HMEeLJuOWGq5 EhKgYshvOwpSrTv399Mw" data-testid="fullscreen-lyric"></div>
+	// <div dir="auto" class="nw6rbs8R08fpPn7RWW2w vapgYYF2HMEeLJuOWGq5" data-testid="fullscreen-lyric"></div>
 
 	return scrollTimer = setInterval(() => {
 		autoScrollLyrics(divLyrics)
@@ -367,7 +377,7 @@ function loadButton() {
 	setTimeout(() => {
 		console.log("load button");
 
-		const lyricsbtn = document.querySelector("button.Button-sc-1dqy6lx-0.SriuV.KAZD28usA1vPz5GVpm63.Xmv2oAnTB85QE4sqbK00");
+		const lyricsbtn = document.querySelector(lyricsButton);
 
 		if (lyricsbtn && lyricsbtn.disabled) {
 			lyricsbtn.disabled = false;
