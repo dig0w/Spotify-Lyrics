@@ -263,7 +263,7 @@ async function displayLyrics() {
 
 		for (let i = 0; i < song.lyrics.length; i++) {
 			let paragraph = song.lyrics[i];
-				if (paragraph == "") { paragraph = "⠀" };
+				if (paragraph == "") { paragraph = "♪" };
 
 			if (divLyrics.children.length > i) {
 				const divPC = document.createElement("div");
