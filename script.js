@@ -203,7 +203,6 @@ async function fetchLyrics(titleContainer, artistsContainer) {
 	const filteredParagraphs = lyrics.filter(paragraph => { return !/\[.*?\]/.test(paragraph) });
 
 	filteredParagraphs.push("");
-	filteredParagraphs.push("");
 
 	song = {
 		title: titleContainer.innerHTML,
@@ -297,6 +296,8 @@ async function displayLyrics() {
 				console.log("7 create lyric", song.lyrics.length);
 			};
 		};
+
+		divLyrics.children[divLyrics.children.length - 1].children[0].innerText = '';
 
 		const divProvider = document.createElement("div");
 			divProvider.setAttribute("class", "LomBcMvfM8AEmZGquAdj");
