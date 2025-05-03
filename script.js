@@ -280,7 +280,8 @@ async function displayLyrics() {
 
 				divLyrics.children[i].setAttribute("dir", "auto");
 				// divLyrics.children[i].setAttribute("class", "nw6rbs8R08fpPn7RWW2w SruqsAzX8rUtY2isUZDF");
-				divLyrics.children[i].setAttribute("class", "nw6rbs8R08fpPn7RWW2w vapgYYF2HMEeLJuOWGq5");
+				// divLyrics.children[i].setAttribute("class", "nw6rbs8R08fpPn7RWW2w vapgYYF2HMEeLJuOWGq5");
+				divLyrics.children[i].setAttribute("class", "BJ1zQ_ReY3QPaS7SW46s vapgYYF2HMEeLJuOWGq5 WNHCBoT949DLr6DD72pk");
 				divLyrics.children[i].setAttribute("data-testid", "fullscreen-lyric");
 
 				console.log("6 edit lyric", song.lyrics.length);
@@ -288,7 +289,8 @@ async function displayLyrics() {
 				const divP = document.createElement("div");
 				divP.setAttribute("dir", "auto");
 				// divP.setAttribute("class", "nw6rbs8R08fpPn7RWW2w SruqsAzX8rUtY2isUZDF");
-				divP.setAttribute("class", "nw6rbs8R08fpPn7RWW2w vapgYYF2HMEeLJuOWGq5");
+				// divP.setAttribute("class", "nw6rbs8R08fpPn7RWW2w vapgYYF2HMEeLJuOWGq5");
+				divP.setAttribute("class", "BJ1zQ_ReY3QPaS7SW46s vapgYYF2HMEeLJuOWGq5 WNHCBoT949DLr6DD72pk");
 				divP.setAttribute("data-testid", "fullscreen-lyric");
 				const divPC = document.createElement("div");
 				divPC.setAttribute("class", "BXlQFspJp_jq9SKhUSP3");
