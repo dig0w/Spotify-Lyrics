@@ -8,11 +8,16 @@ const fetchUrl = 'http://localhost:2024/lyrics?q=';
 const nowPlayingWidget = '[data-testid="now-playing-widget"]';
 const npTitle = '[data-testid="context-item-link"]';
 const npArtist = '[data-testid="context-item-info-artist"]';
-const lyricsContainer = 'div._Wna90no0o0dta47Heiw';
-const lcParent = 'div.FUYNhisXTCmbzt9IDxnT';
-const noLyricsContainer = 'div.e7eFLioNSG5PAi1qVFT4';
+const lyricsContainer = 'div.t_dtt9KL1wnNRvRO_y5L';
+const lcParent = 'div.lofIAg8Ixko3mfBrbfej';
+const noLyricsContainer = 'div.l2060qoyWU4J9ihSxHLE';
 const durationContainer = '[data-testid="playback-duration"]';
 const lyricsButton = '[data-testid="lyrics-button"]';
+const lyricsContainerParent = "_EzvsrEJ47TI8hxzRoKx";
+const lyricDiv = 'MmIREVIj8A2aFVvBZ2Ev';
+const lyricDivClasses = 'o69qODXrbOkf6Tv7fa51 FQYXZaa0aDIrse54Y1YO F8gozO67UMCQqFoPmjyn';
+const currentLyric = '_gZrl2ExJwyxPy1pEUG2';
+const previousLyric = 've52ddYhoAd3Xf27Zxfm';
 
 var song = {
 	title: undefined,
@@ -226,25 +231,32 @@ async function displayLyrics() {
 
 	await delay(100);
 
-	if (document.querySelectorAll(lyricsContainer).length > 1) {
-		console.log("4/1 remove 2 lyrics div");
+	console.log("4 delay");
 
+	if (document.querySelectorAll(lyricsContainer).length > 1) {
 		document.querySelectorAll(lyricsContainer)[1].parentElement.remove();
+		
+		console.log("4/1 remove 2 lyrics div");
 	};
+
+	console.log("4 if 1");
+
 	if (!divLyrics) {
 		divLyrics = document.createElement("div");
-		divLyrics.setAttribute("class", "_Wna90no0o0dta47Heiw");
+		divLyrics.setAttribute("class", lyricsContainer.split("div.")[1]);
 
 		const parent = document.createElement("div");
-		parent.setAttribute("class", "gqaWFmQeKNYnYD5gRv3x");
+		parent.setAttribute("class", lyricsContainerParent);
 		parent.appendChild(divLyrics);
 
 		const parentP = document.querySelector(lcParent);
-			if (!parentP) { return };
+		if (!parentP) { return };
 			parentP.appendChild(parent);
 
 		console.log("4/2 create lyrics div");
 	};
+
+	console.log("4 if 2");
 
 	const noLyricDiv = document.querySelector(noLyricsContainer);
 	if (noLyricDiv && song.lyrics.length > 1) {
@@ -271,7 +283,7 @@ async function displayLyrics() {
 
 			if (divLyrics.children.length > i) {
 				const divPC = document.createElement("div");
-				divPC.setAttribute("class", "BXlQFspJp_jq9SKhUSP3");
+				divPC.setAttribute("class", lyricDiv);
 				divPC.innerHTML = paragraph;
 
 				divLyrics.children[i].replaceChild(divPC, divLyrics.children[i].children[0]);
@@ -279,21 +291,17 @@ async function displayLyrics() {
 				divLyrics.children[i].removeAttribute("class");
 
 				divLyrics.children[i].setAttribute("dir", "auto");
-				// divLyrics.children[i].setAttribute("class", "nw6rbs8R08fpPn7RWW2w SruqsAzX8rUtY2isUZDF");
-				// divLyrics.children[i].setAttribute("class", "nw6rbs8R08fpPn7RWW2w vapgYYF2HMEeLJuOWGq5");
-				divLyrics.children[i].setAttribute("class", "BJ1zQ_ReY3QPaS7SW46s vapgYYF2HMEeLJuOWGq5 WNHCBoT949DLr6DD72pk");
+				divLyrics.children[i].setAttribute("class", lyricDivClasses);
 				divLyrics.children[i].setAttribute("data-testid", "fullscreen-lyric");
 
 				console.log("6 edit lyric", song.lyrics.length);
 			} else {
 				const divP = document.createElement("div");
 				divP.setAttribute("dir", "auto");
-				// divP.setAttribute("class", "nw6rbs8R08fpPn7RWW2w SruqsAzX8rUtY2isUZDF");
-				// divP.setAttribute("class", "nw6rbs8R08fpPn7RWW2w vapgYYF2HMEeLJuOWGq5");
-				divP.setAttribute("class", "BJ1zQ_ReY3QPaS7SW46s vapgYYF2HMEeLJuOWGq5 WNHCBoT949DLr6DD72pk");
+				divP.setAttribute("class", lyricDivClasses);
 				divP.setAttribute("data-testid", "fullscreen-lyric");
 				const divPC = document.createElement("div");
-				divPC.setAttribute("class", "BXlQFspJp_jq9SKhUSP3");
+				divPC.setAttribute("class", lyricDiv);
 				divPC.innerHTML = paragraph;
 
 					divP.appendChild(divPC);
@@ -307,6 +315,7 @@ async function displayLyrics() {
 		divLyrics.children[divLyrics.children.length - 1].children[0].innerText = '';
 
 		const divProvider = document.createElement("div");
+////////////////////////////////////////////////
 			divProvider.setAttribute("class", "LomBcMvfM8AEmZGquAdj");
 		const pProvider = document.createElement("p");
 			pProvider.setAttribute("class", "encore-text encore-text-body-small");
@@ -321,10 +330,12 @@ async function displayLyrics() {
 
 		autoScrollLyrics(divLyrics);
 
+		console.log("?? No If");
 		return;
 	} else {
 		return console.log("7 Has Lyrics");
 	};
+
 };
 
 // Auto Scroll the Lyrics
@@ -348,9 +359,11 @@ function autoScrollLyrics(divLyrics) {
     if (lineIndex >= 0 && lineIndex < totalLines) {
 		// divLyrics.children[lineIndex].scrollIntoView({ behavior: "smooth", block: "center" });
 		divLyrics.children[lineIndex].classList.add("sl-autoScrollLyrics");
-		divLyrics.children[lineIndex].classList.add("EhKgYshvOwpSrTv399Mw");
+		divLyrics.children[lineIndex].classList.add(currentLyric);
 			if (divLyrics.children[lineIndex - 1]) {
 				divLyrics.children[lineIndex - 1].classList.remove("sl-autoScrollLyrics");
+				divLyrics.children[lineIndex - 1].classList.remove(currentLyric);
+				divLyrics.children[lineIndex - 1].classList.add(previousLyric);
 			};
 
 		if (isLyricLineVisible(divLyrics) || index == 0) {
@@ -359,10 +372,6 @@ function autoScrollLyrics(divLyrics) {
 
 		index++;
     };
-
-
-	// <div dir="auto" class="nw6rbs8R08fpPn7RWW2w vapgYYF2HMEeLJuOWGq5 EhKgYshvOwpSrTv399Mw" data-testid="fullscreen-lyric"></div>
-	// <div dir="auto" class="nw6rbs8R08fpPn7RWW2w vapgYYF2HMEeLJuOWGq5" data-testid="fullscreen-lyric"></div>
 
 	return scrollTimer = setInterval(() => {
 		autoScrollLyrics(divLyrics)
