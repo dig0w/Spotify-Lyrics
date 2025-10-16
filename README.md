@@ -69,9 +69,6 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 
 
-<!-- CONTACT -->
-## Contact
-
 Project Link: [https://github.com/dig0w/Spotify-Lyrics](https://github.com/dig0w/Spotify-Lyrics)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
