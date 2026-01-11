@@ -183,42 +183,46 @@ async function fetchLyrics(titleContainer, artistsContainer) {
 		if (title.includes(")")) { title = title.split(")")[0] };
 		if (title.includes("-")) { title = title.split("-")[0] };
 
-	const searchResponse = await fetch(`${fetchUrl}${encodeURIComponent(title + ' ' + artistsContainer.innerText)}`);
-		if (!searchResponse.ok) { return console.error("Search request failed:", await searchResponse.text()); };
+	try {
+		const searchResponse = await fetch(`${fetchUrl}${encodeURIComponent(title + ' ' + artistsContainer.innerText)}`);
+			if (!searchResponse.ok) { return console.error("Search request failed:", await searchResponse.text()); };
 
-	console.log("3 lyrics recived", title + " " + artistsContainer.innerText);
+		console.log("3 lyrics recived", title + " " + artistsContainer.innerText);
 
-	let lyrics = [];
+		let lyrics = [];
 
-	const songData = await searchResponse.json();
-		if (songData.status == 204 || !songData.lyrics) {
-			const noLyricDiv = document.querySelector(noLyricsContainer);
-			if (noLyricDiv) {
-				noLyricDiv.style.display = null;
-			}
+		const songData = await searchResponse.json();
+			if (songData.status == 204 || !songData.lyrics) {
+				const noLyricDiv = document.querySelector(noLyricsContainer);
+				if (noLyricDiv) {
+					noLyricDiv.style.display = null;
+				}
 
-			// const noLyrics = ["You'll have to guess the lyrics for this one.", "Looks like we don't have the lyrics for this song.", "You caught us, we're still working on getting lyrics for this one.", "Hmm. We don't know the lyrics for this one."];
+				// const noLyrics = ["You'll have to guess the lyrics for this one.", "Looks like we don't have the lyrics for this song.", "You caught us, we're still working on getting lyrics for this one.", "Hmm. We don't know the lyrics for this one."];
 
-			// lyrics.push("");
-			// lyrics.push("");
-			// lyrics.push("");
-			// lyrics.push("");
-			// lyrics.push(noLyrics[Math.floor(Math.random() * noLyrics.length)]);
+				// lyrics.push("");
+				// lyrics.push("");
+				// lyrics.push("");
+				// lyrics.push("");
+				// lyrics.push(noLyrics[Math.floor(Math.random() * noLyrics.length)]);
 
-			console.log("No lyrics found", title + " " + artistsContainer.innerText);
-		} else {
-			lyrics = songData.lyrics.split("\n");
+				console.log("No lyrics found", title + " " + artistsContainer.innerText);
+			} else {
+				lyrics = songData.lyrics.split("\n");
+			};
+
+		const filteredParagraphs = lyrics.filter(paragraph => { return !/\[.*?\]/.test(paragraph) });
+
+		filteredParagraphs.push("");
+
+		song = {
+			title: titleContainer.innerHTML,
+			artist: artistsContainer.innerHTML,
+			lyrics: filteredParagraphs
 		};
-
-	const filteredParagraphs = lyrics.filter(paragraph => { return !/\[.*?\]/.test(paragraph) });
-
-	filteredParagraphs.push("");
-
-	song = {
-		title: titleContainer.innerHTML,
-		artist: artistsContainer.innerHTML,
-		lyrics: filteredParagraphs
-	};
+	} catch (err) {
+		console.log(err);
+	}
 
 	return;
 };
